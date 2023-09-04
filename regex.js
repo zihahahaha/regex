@@ -101,7 +101,7 @@ function syntaxAnalyzer(tokens) {
   if (tokens.length > index) throw "PARSE ERROR";
   else {
     console.log("ok");
-
+    // console.dir(CST, { depth: null });
     const AST = (function toAST() {
       function simplify(node) {
         if (!node.operator) return;
@@ -109,29 +109,29 @@ function syntaxAnalyzer(tokens) {
           const simplifyNode = simplify(node[i]);
           if (simplifyNode) node[i] = simplifyNode;
         }
+        // 合并相邻文本节点
         if (node.operator === "CONNECTION" && node.length > 1) {
-          const oldNode = node;
-          node = [];
-          node.operator = "CONNECTION";
-          for (let i = 0; i < oldNode.length; ++i) {
+          let index = 0;
+          for (let i = 0; i < node.length; ++i) {
             let string = "";
-            while (!oldNode[i]?.operator && i < oldNode.length) {
-              string += oldNode[i++];
+            while (!node[i]?.operator && i < node.length) {
+              string += node[i++];
             }
-            if (string.length > 0) node.push(string);
-            if (i < oldNode.length) node.push(oldNode[i]);
+            if (string.length > 0) node[index++] = string;
+            if (i < node.length) node[index++] = node[i];
           }
+          node.length = index;
         }
-        if (node.length === 1 && node.operator !== "*") {
-          return node[0];
-        } else if (node.operator === "*") return node;
+        if (node.length === 1 && node.operator !== "*") return node[0];
+        else if (node.operator === "*") return node;
         else return;
       }
       simplify(CST);
       if (CST.length === 1 && CST?.operator !== "*") return CST[0];
       else return CST;
     })();
-    if (AST.length === 1 && AST?.operator !== "*") AST = AST[0];
+
+    
     console.dir(AST, { depth: null });
   }
 }
