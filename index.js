@@ -1,5 +1,6 @@
 const { regexTokens, syntaxAnalyzer } = require("./regex");
 
-const tokens = regexTokens(`(h*llo)(w*)r(ld)!!`);
+const tokens = regexTokens(`a(aaa)*`);
 console.log(tokens);
 syntaxAnalyzer(tokens);
+
