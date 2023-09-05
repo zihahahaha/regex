@@ -1,6 +1,10 @@
-const { regexTokens, syntaxAnalyzer } = require("./regex");
+const { syntaxAnalyzer } = require("./regex/CST");
+const { CST2NFA, matchNFA } = require("./regex/NFA");
 
-const tokens = regexTokens(`a|(bc)*`);
-console.log(tokens);
-syntaxAnalyzer(tokens);
+let CST = syntaxAnalyzer(`(a*)`);
 
+let NFA = CST2NFA(CST);
+
+// console.dir(NFA, { depth: null });
+
+console.log(matchNFA(NFA, `aa`));

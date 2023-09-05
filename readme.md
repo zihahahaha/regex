@@ -2,22 +2,17 @@
 
 基于 regex 的词法解析器 js 实现
 
+[参考1](https://deniskyashif.com/2020/08/17/parsing-regex-with-recursive-descent/)
+[参考2](https://github.com/deniskyashif/regexjs/tree/master)
+
 # regex 产生式
 
-exp :: plus `(` | plus `)*`
-plus :: `(` factor `(` \* `)*` `)*`
-factor:: word `|` (exp)
-
-## 另一种产生式
-
-网上找的，我用 regex 表示法翻译一下
-[参考](https://deniskyashif.com/2020/08/17/parsing-regex-with-recursive-descent/)
 expr :: term `(` | term `)*`
 term :: `(` factor `)*`
-factor :: `(` atom `)` `(` ? `|` \* `|` + `)*`
-atom :: word `|` (expr)
-
-跟我人肉的差不多嘛，term 到 factor 由于是一元操作符，确实可以省略一层递归，不过写成这样操作符优先级比较清楚
+factor :: atom `(` \* `)?`
+atom :: char `|` (expr)
+char :: <非操作符> 
+<操作符> :: | `|` \* `|` \(
 
 # 定义
 
