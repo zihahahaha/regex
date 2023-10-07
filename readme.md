@@ -8,8 +8,8 @@
 # regex 产生式
 
 expr :: term `(` | term `)*`  
-term :: `(` factor `)*`  
-factor :: atom `(` \* `)?`   
+term :: `(` factor `)+`  
+factor :: atom `(` \* | \+ | ? `)?`   
 atom :: char `|` (expr)  
 char :: <非操作符>  
 <操作符> :: | `|` \* `|` \(  
