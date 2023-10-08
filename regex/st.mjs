@@ -97,16 +97,11 @@ export function regex2st(regex) {
 
   function char() {
     const v = peek();
-    if (
-      v === "|" ||
-      v === "(" ||
-      v === ")" ||
-      v === "+" ||
-      v === "*" ||
-      v === "?"
-    )
+    if (v === "|" || v === "(" || v === "+" || v === "*" || v === "?")
       throw `char:${index}:非法字符`;
-    else {
+    else if (v === "" || v === ")") {
+      return new Literal("");
+    } else {
       next();
       return new Literal(v);
     }

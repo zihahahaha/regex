@@ -93,21 +93,28 @@ export function st2nfa(node) {
 }
 
 export function nfaInterpreter(nfa, input) {
-  function find(state, index) {
+  function find(state, index, epsilons) {
     for (let i = index; i < input.length; ++i) {
       if (state.transition[input[i]]) {
-        if (find(state.transition[input[i]], index + 1)) return true;
+        if (find(state.transition[input[i]], index + 1, [])) return true;
       } else if (state.epsilonTransition.length > 0) {
         for (let j = 0; j < state.epsilonTransition.length; ++j)
-          if (find(state.epsilonTransition[j], index)) return true;
+          if (!epsilons.includes(state.epsilonTransition[j])) {
+            epsilons.push(state.epsilonTransition[j]);
+            if (find(state.epsilonTransition[j], index, epsilons)) return true;
+          }
+      }
+      else return false;
+    }
+    for (let j = 0; j < state.epsilonTransition.length; ++j) {
+      if (!epsilons.includes(state.epsilonTransition[j])) {
+        epsilons.push(state.epsilonTransition[j]);
+        if (find(state.epsilonTransition[j], index, epsilons)) return true;
       }
     }
-    for (let j = 0; j < state.epsilonTransition.length; ++j)
-      if (find(state.epsilonTransition[j], index)) return true;
-
     if (state.isEnd) return true;
     else return false;
   }
 
-  return find(nfa.start, 0);
+  return find(nfa.start, 0, []);
 }
