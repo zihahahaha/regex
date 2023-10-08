@@ -92,7 +92,8 @@ export function st2nfa(node) {
   }
 }
 
-export function nfaInterpreter(nfa, input) {
+// 回溯法
+export function nfaInterpreterBackTracking(nfa, input) {
   function find(state, index, epsilons) {
     for (let i = index; i < input.length; ++i) {
       if (state.transition[input[i]]) {
@@ -103,8 +104,7 @@ export function nfaInterpreter(nfa, input) {
             epsilons.push(state.epsilonTransition[j]);
             if (find(state.epsilonTransition[j], index, epsilons)) return true;
           }
-      }
-      else return false;
+      } else return false;
     }
     for (let j = 0; j < state.epsilonTransition.length; ++j) {
       if (!epsilons.includes(state.epsilonTransition[j])) {
@@ -117,4 +117,35 @@ export function nfaInterpreter(nfa, input) {
   }
 
   return find(nfa.start, 0, []);
+}
+
+// 迭代
+export function nfaInterpreterIteration(nfa, input) {
+  function epsilonClosure(states) {
+    for (let state of states) {
+      for (let epsilon_state of state.epsilonTransition) {
+        if (!states.includes(epsilon_state)) states.push(epsilon_state);
+      }
+    }
+  }
+
+  const start = nfa.start;
+  let states = [start];
+  epsilonClosure(states);
+  for (let symbol of input) {
+    const n_states = [];
+    for (let state of states) {
+      if (
+        state.transition[symbol] &&
+        !n_states.includes(state.transition[symbol])
+      )
+        n_states.push(state.transition[symbol]);
+    }
+    states = n_states;
+    epsilonClosure(states);
+  }
+  for (let state of states) {
+    if (state.isEnd) return true;
+  }
+  return false;
 }
